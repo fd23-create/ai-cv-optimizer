@@ -1,0 +1,488 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ai-cv-optimizer.com/schemas/resume.schema.json",
+  "title": "Resume Schema",
+  "description": "Schema for resume entities in AI CV Optimizer",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier for the resume"
+    },
+    "userId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "ID of the user who owns this resume"
+    },
+    "originalName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "description": "Original filename of the uploaded file"
+    },
+    "fileName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "description": "Stored filename (may be different from original)"
+    },
+    "mimeType": {
+      "type": "string",
+      "enum": [
+        "application/pdf",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      ],
+      "description": "MIME type of the uploaded file"
+    },
+    "fileSize": {
+      "type": "integer",
+      "minimum": 1024,
+      "maximum": 10485760,
+      "description": "File size in bytes (1KB - 10MB)"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "processing", "completed", "failed"],
+      "default": "pending",
+      "description": "Current processing status"
+    },
+    "extractedText": {
+      "type": "string",
+      "minLength": 100,
+      "maxLength": 50000,
+      "description": "Text extracted from the resume file"
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "uploadDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the file was uploaded"
+        },
+        "processingDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When processing was completed"
+        },
+        "textLength": {
+          "type": "integer",
+          "minimum": 100,
+          "description": "Length of extracted text"
+        },
+        "wordCount": {
+          "type": "integer",
+          "minimum": 10,
+          "description": "Number of words in extracted text"
+        },
+        "language": {
+          "type": "string",
+          "pattern": "^[a-z]{2}$",
+          "description": "Detected language code (ISO 639-1)"
+        }
+      },
+      "required": ["uploadDate", "textLength", "wordCount", "language"]
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the resume record was created"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the resume record was last updated"
+    },
+    "analysisId": {
+      "type": ["string", "null"],
+      "format": "uuid",
+      "description": "Reference to the analysis result"
+    },
+    "analysis": {
+      "$ref": "#/definitions/AnalysisResult",
+      "description": "Embedded analysis result (optional)"
+    },
+    "isPublic": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the resume is publicly accessible"
+    },
+    "targetJob": {
+      "type": ["string", "null"],
+      "maxLength": 100,
+      "description": "Target job or position"
+    },
+    "industry": {
+      "type": ["string", "null"],
+      "maxLength": 50,
+      "description": "Target industry"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 50
+      },
+      "maxItems": 10,
+      "description": "User-defined tags for categorization"
+    }
+  },
+  "required": ["id", "userId", "originalName", "fileName", "mimeType", "fileSize", "status", "metadata", "createdAt", "updatedAt"],
+  "additionalProperties": false,
+  "definitions": {
+    "AnalysisResult": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "overallScore": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "scores": {
+          "type": "object",
+          "properties": {
+            "skills": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "experience": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "education": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "format": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            }
+          },
+          "required": ["skills", "experience", "education", "format"]
+        },
+        "skills": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Skill"
+          }
+        },
+        "experience": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Experience"
+          }
+        },
+        "education": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Education"
+          }
+        },
+        "language": {
+          "type": "string",
+          "pattern": "^[a-z]{2}$"
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 500
+          },
+          "maxItems": 20
+        },
+        "strengths": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 500
+          },
+          "maxItems": 10
+        },
+        "improvements": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 500
+          },
+          "maxItems": 20
+        },
+        "missingSkills": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50
+          },
+          "maxItems": 20
+        },
+        "formatChecks": {
+          "type": "object",
+          "properties": {
+            "length": {
+              "type": "boolean"
+            },
+            "contact": {
+              "type": "boolean"
+            },
+            "structure": {
+              "type": "boolean"
+            },
+            "grammar": {
+              "type": "boolean"
+            },
+            "keywords": {
+              "type": "boolean"
+            }
+          },
+          "required": ["length", "contact", "structure", "grammar", "keywords"]
+        },
+        "metadata": {
+          "type": "object",
+          "properties": {
+            "analysisDate": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "processingTime": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "analyzerVersion": {
+              "type": "string",
+              "pattern": "^\\d+\\.\\d+\\.\\d+$"
+            }
+          }
+        }
+      },
+      "required": ["id", "overallScore", "scores", "language", "formatChecks"]
+    },
+    "Skill": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "category": {
+          "type": "string",
+          "enum": ["technical", "business", "soft_skills", "tools"]
+        },
+        "subcategory": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "method": {
+          "type": "string",
+          "enum": ["keyword", "pattern", "entity", "yake", "combined"]
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "context": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "tfidfScore": {
+          "type": "number",
+          "minimum": 0
+        },
+        "finalScore": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": ["name", "category", "confidence", "method", "count"]
+    },
+    "Experience": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 200
+        },
+        "company": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 200
+        },
+        "location": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "startDate": {
+          "type": ["string", "null"],
+          "maxLength": 50
+        },
+        "endDate": {
+          "type": ["string", "null"],
+          "maxLength": 50
+        },
+        "durationYears": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 50
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "achievements": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 500
+          },
+          "maxItems": 10
+        },
+        "metrics": {
+          "type": "object",
+          "properties": {
+            "quantifiableAchievements": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "actionVerbCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "technicalKeywords": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "managementKeywords": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "achievementCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "descriptionLength": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "hasMetrics": {
+              "type": "boolean"
+            }
+          }
+        },
+        "isCurrent": {
+          "type": "boolean"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": ["title", "durationYears", "isCurrent", "confidence"]
+    },
+    "Education": {
+      "type": "object",
+      "properties": {
+        "degree": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "field": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "institution": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "location": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "startDate": {
+          "type": ["string", "null"],
+          "maxLength": 50
+        },
+        "endDate": {
+          "type": ["string", "null"],
+          "maxLength": 50
+        },
+        "gpa": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 4
+        },
+        "achievements": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 200
+          },
+          "maxItems": 5
+        },
+        "levelScore": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 6
+        },
+        "isCurrent": {
+          "type": "boolean"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": ["levelScore", "isCurrent", "confidence"]
+    }
+  },
+  "examples": [
+    {
+      "id": "123e4567-e89b-12d3-a456-426614174000",
+      "userId": "987e6543-e21b-09d8-a456-426614174999",
+      "originalName": "john_doe_resume.pdf",
+      "fileName": "resume_123e4567-e89b-12d3-a456-426614174000.pdf",
+      "mimeType": "application/pdf",
+      "fileSize": 524288,
+      "status": "completed",
+      "extractedText": "John Doe\nSoftware Engineer with 5 years of experience...",
+      "metadata": {
+        "uploadDate": "2024-01-15T10:30:00Z",
+        "processingDate": "2024-01-15T10:32:15Z",
+        "textLength": 2500,
+        "wordCount": 400,
+        "language": "en"
+      },
+      "createdAt": "2024-01-15T10:30:00Z",
+      "updatedAt": "2024-01-15T10:32:15Z",
+      "analysisId": "456e7890-e12b-34d5-a456-426614174111",
+      "isPublic": false,
+      "targetJob": "Senior Software Engineer",
+      "industry": "Technology",
+      "tags": ["software", "engineering", "javascript"]
+    }
+  ]
+}

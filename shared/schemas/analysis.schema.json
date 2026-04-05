@@ -1,0 +1,726 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ai-cv-optimizer.com/schemas/analysis.schema.json",
+  "title": "Analysis Schema",
+  "description": "Schema for resume analysis results in AI CV Optimizer",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier for the analysis"
+    },
+    "resumeId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "ID of the analyzed resume"
+    },
+    "overallScore": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Overall resume score (0-100)"
+    },
+    "scores": {
+      "type": "object",
+      "properties": {
+        "skills": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Skills component score"
+        },
+        "experience": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Experience component score"
+        },
+        "education": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Education component score"
+        },
+        "format": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Format and structure score"
+        },
+        "readability": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Readability score"
+        },
+        "keywordDensity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Keyword density score"
+        }
+      },
+      "required": ["skills", "experience", "education", "format"]
+    },
+    "scoreBreakdown": {
+      "type": "object",
+      "properties": {
+        "skills": {
+          "$ref": "#/definitions/ScoreBreakdown"
+        },
+        "experience": {
+          "$ref": "#/definitions/ScoreBreakdown"
+        },
+        "education": {
+          "$ref": "#/definitions/ScoreBreakdown"
+        },
+        "format": {
+          "$ref": "#/definitions/ScoreBreakdown"
+        }
+      }
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Skill"
+      },
+      "description": "Extracted and analyzed skills"
+    },
+    "experience": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Experience"
+      },
+      "description": "Parsed work experience entries"
+    },
+    "education": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Education"
+      },
+      "description": "Parsed education entries"
+    },
+    "language": {
+      "type": "string",
+      "pattern": "^[a-z]{2}$",
+      "description": "Detected language code (ISO 639-1)"
+    },
+    "languageAnalysis": {
+      "type": "object",
+      "properties": {
+        "detectedLanguage": {
+          "type": "string",
+          "pattern": "^[a-z]{2}$"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": ["detectedLanguage", "confidence"]
+    },
+    "recommendations": {
+      "type": "object",
+      "properties": {
+        "general": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 500
+          },
+          "maxItems": 20
+        },
+        "skills": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 500
+          },
+          "maxItems": 15
+        },
+        "experience": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 500
+          },
+          "maxItems": 15
+        },
+        "education": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 500
+          },
+          "maxItems": 10
+        },
+        "format": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 500
+          },
+          "maxItems": 10
+        }
+      }
+    },
+    "strengths": {
+      "type": "object",
+      "properties": {
+        "overall": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 500
+          },
+          "maxItems": 10
+        },
+        "skills": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 500
+          },
+          "maxItems": 10
+        },
+        "experience": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 500
+          },
+          "maxItems": 10
+        },
+        "education": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 500
+          },
+          "maxItems": 10
+        },
+        "format": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 500
+          },
+          "maxItems": 10
+        }
+      }
+    },
+    "missingSkills": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 2,
+        "maxLength": 50
+      },
+      "maxItems": 20,
+      "description": "Suggested missing skills for target role"
+    },
+    "skillGaps": {
+      "type": "object",
+      "properties": {
+        "technical": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50
+          },
+          "maxItems": 15
+        },
+        "business": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50
+          },
+          "maxItems": 10
+        },
+        "softSkills": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50
+          },
+          "maxItems": 10
+        }
+      }
+    },
+    "formatChecks": {
+      "type": "object",
+      "properties": {
+        "appropriateLength": {
+          "type": "boolean",
+          "description": "Resume has appropriate length (1-2 pages)"
+        },
+        "contactInfo": {
+          "type": "boolean",
+          "description": "Contact information is present and complete"
+        },
+        "properStructure": {
+          "type": "boolean",
+          "description": "Resume has proper structure with clear sections"
+        },
+        "grammarSpelling": {
+          "type": "boolean",
+          "description": "No obvious grammar or spelling errors"
+        },
+        "keywordUsage": {
+          "type": "boolean",
+          "description": "Relevant keywords are used appropriately"
+        },
+        "bulletPoints": {
+          "type": "boolean",
+          "description": "Bullet points are used effectively"
+        }
+      },
+      "required": ["appropriateLength", "contactInfo", "properStructure", "grammarSpelling", "keywordUsage", "bulletPoints"]
+    },
+    "industryAnalysis": {
+      "type": "object",
+      "properties": {
+        "detectedIndustry": {
+          "type": "string",
+          "maxLength": 50,
+          "description": "Detected target industry"
+        },
+        "relevanceScore": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Industry relevance score"
+        },
+        "industryKeywords": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50
+          },
+          "maxItems": 20,
+          "description": "Industry keywords found in resume"
+        },
+        "missingKeywords": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50
+          },
+          "maxItems": 20,
+          "description": "Missing industry keywords"
+        }
+      }
+    },
+    "careerProgression": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": ["strong", "moderate", "weak", "stagnant", "unknown"],
+          "description": "Career progression level"
+        },
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Career progression score"
+        },
+        "indicators": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "maxItems": 10,
+          "description": "Progression indicators found"
+        }
+      }
+    },
+    "readabilityMetrics": {
+      "type": "object",
+      "properties": {
+        "avgSentenceLength": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Average sentence length in words"
+        },
+        "avgWordLength": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Average word length in characters"
+        },
+        "readabilityScore": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Readability score (higher = more readable)"
+        },
+        "sentenceCount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total sentence count"
+        },
+        "wordCount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total word count"
+        }
+      }
+    },
+    "contactInfo": {
+      "type": "object",
+      "properties": {
+        "emails": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "email"
+          },
+          "maxItems": 5,
+          "description": "Email addresses found"
+        },
+        "phones": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[\\+\\d\\s\\-\\(\\)]+$"
+          },
+          "maxItems": 5,
+          "description": "Phone numbers found"
+        },
+        "websites": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri"
+          },
+          "maxItems": 5,
+          "description": "Websites found"
+        },
+        "linkedin": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^https?://(www\\.)?linkedin\\.com/in/.*"
+          },
+          "maxItems": 3,
+          "description": "LinkedIn profiles found"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "analysisDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the analysis was performed"
+        },
+        "processingTime": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Processing time in milliseconds"
+        },
+        "analyzerVersion": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Version of the analyzer used"
+        },
+        "language": {
+          "type": "string",
+          "pattern": "^[a-z]{2}$",
+          "description": "Language used for analysis"
+        },
+        "options": {
+          "type": "object",
+          "description": "Analysis options used"
+        }
+      },
+      "required": ["analysisDate", "processingTime", "analyzerVersion", "language"]
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the analysis record was created"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the analysis record was last updated"
+    }
+  },
+  "required": ["id", "resumeId", "overallScore", "scores", "language", "formatChecks", "metadata", "createdAt", "updatedAt"],
+  "additionalProperties": false,
+  "definitions": {
+    "ScoreBreakdown": {
+      "type": "object",
+      "properties": {
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Component score"
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Weight in overall calculation"
+        },
+        "contribution": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Contribution to overall score"
+        }
+      },
+      "required": ["score", "weight", "contribution"]
+    },
+    "Skill": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "category": {
+          "type": "string",
+          "enum": ["technical", "business", "soft_skills", "tools"]
+        },
+        "subcategory": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "method": {
+          "type": "string",
+          "enum": ["keyword", "pattern", "entity", "yake", "combined"]
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "context": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "tfidfScore": {
+          "type": "number",
+          "minimum": 0
+        },
+        "finalScore": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "methods": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["keyword", "pattern", "entity", "yake", "combined"]
+          },
+          "maxItems": 5
+        }
+      },
+      "required": ["name", "category", "confidence", "method", "count"]
+    },
+    "Experience": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 200
+        },
+        "company": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 200
+        },
+        "location": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "startDate": {
+          "type": ["string", "null"],
+          "maxLength": 50
+        },
+        "endDate": {
+          "type": ["string", "null"],
+          "maxLength": 50
+        },
+        "durationYears": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 50
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "achievements": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 500
+          },
+          "maxItems": 10
+        },
+        "metrics": {
+          "type": "object",
+          "properties": {
+            "quantifiableAchievements": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "actionVerbCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "technicalKeywords": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "managementKeywords": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "achievementCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "descriptionLength": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "hasMetrics": {
+              "type": "boolean"
+            }
+          }
+        },
+        "isCurrent": {
+          "type": "boolean"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": ["title", "durationYears", "isCurrent", "confidence"]
+    },
+    "Education": {
+      "type": "object",
+      "properties": {
+        "degree": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "field": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "institution": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "location": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "startDate": {
+          "type": ["string", "null"],
+          "maxLength": 50
+        },
+        "endDate": {
+          "type": ["string", "null"],
+          "maxLength": 50
+        },
+        "gpa": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 4
+        },
+        "achievements": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 200
+          },
+          "maxItems": 5
+        },
+        "levelScore": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 6
+        },
+        "isCurrent": {
+          "type": "boolean"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": ["levelScore", "isCurrent", "confidence"]
+    }
+  },
+  "examples": [
+    {
+      "id": "456e7890-e12b-34d5-a456-426614174111",
+      "resumeId": "123e4567-e89b-12d3-a456-426614174000",
+      "overallScore": 85.5,
+      "scores": {
+        "skills": 88,
+        "experience": 82,
+        "education": 90,
+        "format": 85,
+        "readability": 87,
+        "keywordDensity": 83
+      },
+      "language": "en",
+      "formatChecks": {
+        "appropriateLength": true,
+        "contactInfo": true,
+        "properStructure": true,
+        "grammarSpelling": true,
+        "keywordUsage": true,
+        "bulletPoints": true
+      },
+      "metadata": {
+        "analysisDate": "2024-01-15T10:32:15Z",
+        "processingTime": 2500,
+        "analyzerVersion": "1.2.0",
+        "language": "en"
+      },
+      "createdAt": "2024-01-15T10:32:15Z",
+      "updatedAt": "2024-01-15T10:32:15Z"
+    }
+  ]
+}
